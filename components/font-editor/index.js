@@ -10,12 +10,6 @@ export function FontEditor() {
   const { characters, fontSize, charactersLimit, set } =
     useContext(AsciiContext)
 
-  const canvasDebug = useMemo(() => document.createElement('canvas'), [])
-  const contextDebug = useMemo(
-    () => canvasDebug.getContext('2d'),
-    [canvasDebug]
-  )
-
   const canvas = useMemo(() => document.createElement('canvas'), [])
   const context = useMemo(() => canvas.getContext('2d'), [canvas])
   const texture = useMemo(() => {
@@ -31,19 +25,14 @@ export function FontEditor() {
   }, [texture])
 
   useEffect(() => {
-    el.current.appendChild(canvasDebug)
     el.current.appendChild(canvas)
 
     return () => {
       canvas.remove()
-      canvasDebug.remove()
     }
   }, [])
 
   useEffect(() => {
-    canvasDebug.width = 1024
-    canvasDebug.height = 1024
-
     canvas.width = 1024
     canvas.height = 1024
   }, [])
@@ -51,7 +40,6 @@ export function FontEditor() {
   function render() {
     if (!context) return
     context.clearRect(0, 0, 1024, 1024)
-    contextDebug.clearRect(0, 0, 1024, 1024)
     context.font = `${fontSize}px CustomFont, monospace`
     context.textAlign = 'center'
     context.textBaseline = 'middle'
@@ -67,9 +55,6 @@ export function FontEditor() {
       if (invert) {
         c = 256 - c
       }
-
-      contextDebug.fillStyle = `rgb(${c},${c},${c})`
-      contextDebug.fillRect(x * 64, y * 64, 64, 64)
     }
 
     charactersArray.forEach((character, i) => {
@@ -87,17 +72,5 @@ export function FontEditor() {
     render()
   }, [characters, context, charactersLimit, invert, fontSize])
 
-  return (
-    <div ref={el} className={s.font}>
-      <input
-        value={characters}
-        onKeyDown={({}) => {
-          console.log('onKeydown')
-        }}
-        onChange={({ target }) => {
-          set({ characters: target.value })
-        }}
-      />
-    </div>
-  )
+  return <div ref={el} className={s.font}></div>
 }

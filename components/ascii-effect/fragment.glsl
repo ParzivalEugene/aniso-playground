@@ -30,7 +30,6 @@ float random(in float x) {
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
     vec2 size = vec2(16.);
 
-    // pixelate the input texture
     vec2 division = resolution / uGranularity;
     vec2 d = 1. / division;
     vec2 pixelizedUV = d * (floor(uv / d) + 0.5);
@@ -47,33 +46,20 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
         grayColor = 1. - grayColor;
     }
 
-    // get the character index
     float charIndex = floor(grayColor * (uCharactersLimit -  1.));
     float charX = mod(charIndex, size.x);
     float charY = floor(charIndex / size.y);
 
-    // fit with the grid
     vec2 charUV = mod(uv * (division/size), 1./size);
 
-    // start to top/left
     charUV -= vec2(0.,1./size);
 
-    // offset to the character
     vec2 offset = vec2(charX, -charY) / size;
     charUV += offset;
 
     vec4 ascii = texture2D(uCharactersTexture, charUV);
 
     vec4 color = ascii;
-
-
-    // else {
-    //     color = pixelizedColor * ascii.r;
-    // }
-
-    // if(uGreyscale) {
-    //     color.rgb = vec3(grayscale(pixelizedColor.rgb));
-    // }
 
     if(uFillPixels) {
         if(uOverwriteColor) {
@@ -108,12 +94,6 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     if(color.rgb == vec3(0.)) {
         color.a = 0.;
     }
-
-
-    // outputColor = vec4(uBackground, 1.) + color;
-    // if(outputColor.rgb == vec3(0.)) {
-    //     outputColor.a = 0.;
-    // }
 
     float alpha = uBackground == vec3(0.) ? color.a : 1.;
     outputColor = vec4(blendNormal(uBackground, color.rgb, color.a), alpha);

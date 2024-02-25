@@ -34,6 +34,7 @@ export function GUI() {
             hideCopyButton
             neverHide
             collapsed={false}
+            hidden
           />
         </div>
         <div className={s.description}>
